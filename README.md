@@ -1,5 +1,3 @@
-## Hi there 👋
-
 # 💫 About Me:
 🔭 I'm currently working on Nualt Studio. Web and brand for businesses whose work deserves better than what they have online.<br>👯 I'm looking to collaborate on projects with a point of view. Anything that needs to exist and doesn't yet.<br>🤝 I'm looking for help with Go and distributed systems. The kind of things you only understand by breaking them first.<br>🌱 I'm currently learning how the web actually works underneath. HTML to React, the slow way, on purpose.<br>💬 Ask me about typefaces. Next.js. Why Europe needs its own cloud. Why accounting can be good content.<br>⚡ Fun fact ? I wrote a novel before writing a line of code. I'm not sure which one was harder.
 
