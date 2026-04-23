@@ -14,10 +14,6 @@
 ![](https://streak-stats.demolab.com/?user=thomassarazin&theme=react&hide_border=false)<br/>
 ![](https://github-readme-stats.shion.dev/api/top-langs/?username=thomassarazin&theme=react&hide_border=false&include_all_commits=true&count_private=true&layout=compact)
 
-## 🏆 GitHub Trophies
-![](https://github-profile-trophy.vercel.app/?username=thomassarazin&theme=react&no-frame=false&no-bg=true&margin-w=4)
-
----
 [![](https://komarev.com/ghpvc/?username=thomassarazin&icon=3&color=0)](https://visitcount.itsvg.in)
 
 <!-- Proudly created with GPRM ( https://gprm.itsvg.in ) -->
