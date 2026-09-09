@@ -1,0 +1,32 @@
+name: refresh cards
+
+on:
+  schedule:
+    - cron: "17 4 * * *"        # every night, after the contribution graph settles
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rebuild the SVG cards
+        env:
+          # GH_PAT (read:user) keeps private contributions in the counts; the default
+          # token only sees public ones.
+          GH_TOKEN: ${{ secrets.GH_PAT || github.token }}
+        run: python3 scripts/build.py
+
+      - name: Commit if anything moved
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh cards"
+            git push
+          fi
