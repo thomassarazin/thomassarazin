@@ -3,25 +3,33 @@
 
     python3 scripts/build.py
 
-Type system (DESIGN_MEMORY of nualt-landing): Space Grotesk 300 for titles, Inter 400/500
-for body and labels. Never bold. Fonts are embedded per card, only the faces the card uses.
-Data cards (activity, contributions) need `gh` authenticated locally, or GH_TOKEN on CI.
+Type system (DESIGN_MEMORY of nualt-landing): Yellix 400 for titles (g, l, t, u alternates),
+Inter 400 for body, Geist Pixel for labels. Never bold. Blue on ivory, square corners, 1px lines.
+Fonts are embedded per card, only the faces the card uses, files untouched.
+Data cards (activity, contributions, repo facts) need `gh` authenticated locally, or GH_TOKEN on CI.
 """
-import datetime, html, json, os, re, subprocess
+import datetime, html, json, os, re, subprocess, urllib.request
 
 USER = os.environ.get("GH_USER", "thomassarazin")
-BG, TILE, FG, MUTED, LINE = "#292929", "#333333", "#FFFFE3", "#BDBDAD", "#4a4a42"
-EMPTY, RAMP = "#3a3a35", ["#5d5d4e", "#8a8a75", "#bdbdad", "#FFFFE3"]
+BLUE, IVORY, MUTED = "#0755B5", "#F4F2E8", "#326DAA"    # --foreground, --background, --foreground-muted
+BG, FG, LINE = IVORY, BLUE, BLUE
+EMPTY, RAMP = "#E4E4E0", ["#B5C8E4", "#7A9FD3", "#3F76C4", BLUE]
 W, HALF = 1000, 490                          # full README column, and a cell of a two column table
 
 FONTS = json.load(open("scripts/fonts.json"))
-FACES = {"grotesk": ("Space Grotesk", 300), "inter400": ("Inter", 400), "inter500": ("Inter", 500)}
-TITLE = "'Space Grotesk',Helvetica,Arial,sans-serif"
+FACES = {"yellix": ("Yellix", 400), "inter400": ("Inter", 400), "pixel": ("Geist Pixel", 400),
+         "mono": ("Geist Mono", 400)}
+TITLE = "Yellix,Helvetica,Arial,sans-serif"
 BODY = "Inter,Helvetica,Arial,sans-serif"
-STYLE = {"title": (TITLE, 300, 0.56, "grotesk"),    # family, weight, average advance (em), face key
+PIXEL = "'Geist Pixel',ui-monospace,Menlo,monospace"
+MONO = "'Geist Mono',ui-monospace,Menlo,monospace"
+STYLE = {"title": (TITLE, 400, 0.52, "yellix"),     # family, weight, average advance (em), face key
          "body": (BODY, 400, 0.50, "inter400"),
-         "label": (BODY, 500, 0.62, "inter500")}      # labels are uppercase and tracked
-H1, H2, H3, TXT, LBL = 44, 28, 21, 16, 12            # the whole scale. Titles: Space Grotesk. Text: Inter.
+         "label": (PIXEL, 400, 0.60, "pixel"),      # subheads, facts, dates
+         "code": (MONO, 400, 0.60, "mono")}         # install commands
+# Same alternates as --font-heading-features on the site: g ss03, l ss08, t ss13, u ss15.
+YELLIX_FEATURES = '"ss03" on,"ss08" on,"ss13" on,"ss15" on'
+H1, H2, H3, TXT, LBL = 44, 32, 24, 16, 14            # the whole scale. Titles: Yellix. Text: Inter.
 
 HEADLINE = ["Custom e-commerce on MedusaJS v2",
             "Payload CMS / Next.js",
@@ -53,11 +61,11 @@ REPOS = [
     {"name": "medusa-plugin-better-auth", "url": "https://github.com/nualt/medusa-plugin-better-auth",
      "desc": "The authentication brick Medusa v2 was missing. Better Auth wired into Medusa for "
              "modern, flexible auth. Every abandoned signup is a sale that goes elsewhere.",
-     "tags": ["TypeScript", "MedusaJS", "Better Auth"]},
+     "icon": "betterauth-inverse-isometrique", "npm": "@nualt/medusa-plugin-better-auth"},
     {"name": "responsive-motion", "url": "https://github.com/nualt/responsive-motion",
      "desc": "Claude Code skill that makes scroll choreographies degrade cleanly on every device: "
              "pinned sections, sticky columns, reduced motion. No per-device hacks.",
-     "tags": ["Claude Code", "GSAP", "ScrollTrigger"]},
+     "icon": "appareils-isometriques"},
 ]
 
 POSTS = [
@@ -86,10 +94,8 @@ def esc(s):
 
 def text(x, y, s, size, style="body", fill=FG, anchor="start"):
     fam, weight, _, _ = STYLE[style]
-    extra = ' letter-spacing="0.08em"' if style == "label" else ""
-    s = s.upper() if style == "label" else s
     return (f'<text x="{x:.1f}" y="{y:.1f}" fill="{fill}" font-size="{size}" font-family="{fam}" '
-            f'font-weight="{weight}" text-anchor="{anchor}"{extra}>{esc(s)}</text>')
+            f'font-weight="{weight}" text-anchor="{anchor}">{esc(s)}</text>')
 
 def width(s, size, style="body"):
     return len(s) * size * STYLE[style][2]
@@ -109,9 +115,11 @@ def faces(*styles):
     keys = sorted({STYLE[s][3] for s in styles})
     rules = "".join(f"@font-face{{font-family:'{FACES[k][0]}';font-style:normal;font-weight:{FACES[k][1]};"
                     f"src:url(data:font/woff2;base64,{FONTS[k]['b64']}) format('woff2');}}" for k in keys)
+    if "yellix" in keys:
+        rules += f'text[font-family^="Yellix"]{{font-feature-settings:{YELLIX_FEATURES};}}'
     return f"<style>{rules}</style>"
 
-def card(w, h, label, styles=(), radius=10, fill=BG, stroke=None):
+def card(w, h, label, styles=(), radius=0, fill=BG, stroke=None):
     s = f' stroke="{stroke}"' if stroke else ""
     return (f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
             f'width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="{esc(label)}">'
@@ -141,28 +149,36 @@ def inline_svg(path, i, cream=False):
         inner = re.sub(pat, rep, inner)
     return vb, inner, fill
 
-def wordmark():
-    return re.search(r'<path d="([^"]+)"', open("assets/wordmark.svg").read()).group(1)
+def logo(x, y, w, color):
+    """public/logo/nualt.svg (249 × 75) of the site, in one colour."""
+    vb, inner, _ = inline_svg("assets/logo.svg", "logo")
+    inner = inner.replace("fill:rgb(7,85,181)", f"fill:{color}")
+    return f'<svg x="{x}" y="{y}" width="{w}" height="{w * 75 / 249:.1f}" viewBox="{vb}">{inner}</svg>'
+
+# Block rows of the site footer (TetrisBorder): each block fills 95 % of its cell, ivory on blue.
+BLOCKS = ["110001110011000111", "100111100010110001", "111001001110011100"]
+
+def blocks(y, cols, cell, rows=BLOCKS):
+    out = []
+    for r, row in enumerate(rows):
+        row = (row * 3)[:cols]
+        for c, on in enumerate(row):
+            if on == "1":
+                out.append(f'<rect x="{c * cell + cell * 0.025:.1f}" y="{y + r * cell + cell * 0.025:.1f}" '
+                           f'width="{cell * 0.95:.1f}" height="{cell * 0.95:.1f}" fill="{IVORY}"/>')
+    return "".join(out)
 
 # ------------------------------------------------------------------ header / footer
-def build_header(path="assets/header.svg", H=440, PAD=36):
-    vb, inner, _ = inline_svg("assets/stack-iso.svg", 99)
-    ih = H - 2 * PAD
-    iw = 720 / 441 * ih
-    ms = 200 / 718
-    write(path, [card(W + 200, H, "nualt", radius=0),
-                 f'<svg x="{PAD}" y="{PAD}" width="{iw:.1f}" height="{ih}" viewBox="95 52 720 441" '
-                 f'preserveAspectRatio="xMidYMid meet">{inner}</svg>',
-                 f'<g transform="translate({W + 200 - PAD - 200},{H - PAD - 194 * ms:.1f}) scale({ms:.4f})">'
-                 f'<path d="{wordmark()}" fill="{FG}"/></g>',
-                 f'<rect x="0" y="{H - 3}" width="{W + 200}" height="3" fill="{FG}" fill-opacity="0.85"/>'])
+def build_header(path="assets/header.svg", cell=40, PAD=48, LOGO=360):
+    w = W + 200
+    H = 3 * cell + 2 * PAD + LOGO * 75 / 249
+    write(path, [card(w, H, "nualt", fill=BLUE),
+                 blocks(0, w // cell, cell),
+                 logo(PAD, H - PAD - LOGO * 75 / 249, LOGO, IVORY)])
 
-def build_footer(path="assets/footer.svg", H=110, PAD=30):
-    ms = 150 / 718
-    write(path, [card(W + 200, H, "nualt", radius=0),
-                 f'<rect x="0" y="0" width="{W + 200}" height="3" fill="{FG}" fill-opacity="0.85"/>',
-                 f'<g transform="translate({W + 200 - PAD - 150},{(H - 194 * ms) / 2:.1f}) scale({ms:.4f})">'
-                 f'<path d="{wordmark()}" fill="{FG}" fill-opacity="0.9"/></g>'])
+def build_footer(path="assets/footer.svg", cell=40):
+    write(path, [card(W + 200, 3 * cell, "", fill=BLUE),
+                 blocks(0, (W + 200) // cell, cell, BLOCKS[::-1])])
 
 # --------------------------------------------------------------------------- headline
 def build_headline(path="assets/headline.svg", size=H1, slot=4000):
@@ -184,12 +200,12 @@ def build_headline(path="assets/headline.svg", size=H1, slot=4000):
     write(path, out)
 
 # ------------------------------------------------------------------- section titles
-def build_titles(H=64, PAD=30):
+def build_titles(H=72, PAD=24):
     for slug, label in SECTIONS:
         write(f"assets/title-{slug}.svg",
               [card(W, H, label, styles=("title",)),
-               text(PAD, H / 2 + 10, label, H2, "title"),
-               f'<rect x="{PAD}" y="{H - 1}" width="{W - 2 * PAD}" height="1" fill="{LINE}"/>'])
+               text(PAD, H - 24, label, H2, "title"),
+               f'<rect x="0" y="{H - 1}" width="{W}" height="1" fill="{LINE}"/>'])
 
 # ------------------------------------------------------------------------------ about
 def build_about(path="assets/about.svg", PAD=30):
@@ -217,38 +233,82 @@ def build_about(path="assets/about.svg", PAD=30):
     write(path, out)
 
 # ------------------------------------------------------------------- project / posts
-def build_repo_cards(PAD=24):
+def repo_facts(r):
+    """Topics, install command and facts (npm version, last push, licence), as nualt.fr/open-source shows them."""
+    slug = r["url"].split("github.com/")[1]
+    g = json.loads(subprocess.run(["gh", "api", f"repos/{slug}"], capture_output=True, text=True, check=True).stdout)
+    version = None
+    if r.get("npm"):
+        with urllib.request.urlopen(f"https://registry.npmjs.org/{r['npm']}/latest") as res:
+            version = json.load(res).get("version")
+    topics = g.get("topics", [])
+    if r.get("npm"):
+        command = f"npm i {r['npm']}"
+    elif {"claude-code-plugin", "agent-skills"} & set(topics):
+        command = f"npx skills add {slug}"
+    else:
+        command = f"git clone {r['url']}"
+    pushed = datetime.date.fromisoformat(g["pushed_at"][:10])
+    licence = (g.get("license") or {}).get("spdx_id")
+    facts = [f"v{version}" if version else None, f"{pushed:%b} {pushed.day}, {pushed.year}",
+             licence if licence != "NOASSERTION" else None]
+    return topics, command, [f for f in facts if f]
+
+def iso_icon(name, x, y, size):
+    """Isometric icon of the site, original variant: ivory faces, blue lines and hatching."""
+    vb, inner, _ = inline_svg(f"assets/iso/nualt-{name}.svg", name)
+    inner = inner.replace("var(--blue)", IVORY).replace("currentColor", BLUE)
+    hatch = 0.25 if "betterauth" in name else 0.5
+    return (f'<style>pattern path{{stroke-width:{hatch}}}</style>'
+            f'<svg x="{x:.1f}" y="{y:.1f}" width="{size}" height="{size}" viewBox="{vb}" fill="none" '
+            f'stroke-linejoin="round" stroke-linecap="round" overflow="visible">{inner}</svg>')
+
+def build_repo_cards(PAD=24, THUMB=128, ICON=88, CMD=48, DESC=15, LEAD=22):
+    """Card of the open-source catalogue: icon cell on the left, topics, name, description, facts,
+    then the install command in its own cell across the card."""
+    x0 = THUMB + PAD
+    tw = HALF - x0 - PAD
+    rows = max(len(wrap(r["desc"], tw, DESC)) for r in REPOS)   # same height across a row of the table
+    name_y = PAD + 50
+    desc_y = name_y + 34
+    facts_y = desc_y + (rows - 1) * LEAD + 40
+    box = facts_y + PAD
+    H = box + CMD
     for r in REPOS:
-        lines = wrap(r["desc"], HALF - 2 * PAD, TXT)
-        top = PAD + 16
-        y0 = top + 34
-        H = y0 + len(lines) * 24 + 14 + 30 + PAD
-        out = [card(HALF, H, r["name"], styles=("title", "body", "label"), stroke=TILE),
-               text(PAD, top, r["name"], H3, "title")]
-        y = y0
-        for line in lines:
-            out.append(text(PAD, y, line, TXT, "body", MUTED)); y += 24
-        y += 14
-        x = PAD
-        for tag in r["tags"]:
-            w = width(tag, LBL, "label") + 22
-            out += [f'<rect x="{x:.1f}" y="{y}" width="{w:.1f}" height="28" rx="7" fill="{TILE}"/>',
-                    text(x + w / 2, y + 18.5, tag, LBL, "label", FG, "middle")]
-            x += w + 8
+        topics, command, facts = repo_facts(r)
+        shown = []
+        for t in topics:                                         # as many topics as fit on one line
+            if width(" · ".join(shown + [t]), LBL, "label") > tw:
+                break
+            shown.append(t)
+        out = [card(HALF, H, r["name"], styles=("title", "body", "label", "code"), stroke=LINE),
+               f'<rect x="{THUMB}" y="0" width="1" height="{box}" fill="{LINE}"/>',
+               f'<rect x="0" y="{box}" width="{HALF}" height="1" fill="{LINE}"/>',
+               iso_icon(r["icon"], (THUMB - ICON) / 2, (box - ICON) / 2, ICON),
+               text(x0, PAD + 14, " · ".join(shown), LBL, "label"),
+               text(x0, name_y, r["name"], H3, "title")]
+        y = desc_y
+        for line in wrap(r["desc"], tw, DESC):
+            out.append(text(x0, y, line, DESC, "body")); y += LEAD
+        x = x0
+        for f in facts:
+            out.append(text(x, facts_y, f, LBL, "label", MUTED))
+            x += width(f, LBL, "label") + 16
+        out.append(text(16, box + CMD / 2 + 5, command, LBL, "code"))
         write(f"assets/repo-{r['name']}.svg", out)
 
 def build_post_cards(PAD=24):
     for i, (title, slug) in enumerate(POSTS):
         lines = wrap(title, HALF - 2 * PAD - 30, TXT)
         H = PAD + max(2, len(lines)) * 24 + PAD - 4      # same height across a row of the table
-        out = [card(HALF, H, title, styles=("body",), stroke=TILE)]
+        out = [card(HALF, H, title, styles=("body",), stroke=LINE)]
         y = PAD + 16
         for line in lines:
             out.append(text(PAD, y, line, TXT, "body")); y += 24
         out.append(text(HALF - PAD, PAD + 16, "→", TXT, "body", MUTED, "end"))
         write(f"assets/post-{i}.svg", out)
     write("assets/post-all.svg",
-          [card(W, 68, "Tous les articles", styles=("body",), stroke=TILE),
+          [card(W, 68, "Tous les articles", styles=("body",), stroke=LINE),
            text(30, 41, "Tous les articles sur nualt.fr/blog", TXT, "body"),
            text(W - 30, 41, "→", TXT, "body", MUTED, "end")])
 
@@ -257,7 +317,7 @@ def build_links(H=68, gap=14):
     w = (W - (len(LINKS) - 1) * gap) / len(LINKS)
     for i, (label, url) in enumerate(LINKS):
         write(f"assets/link-{i}.svg",
-              [card(round(w), H, label, styles=("body",), stroke=TILE),
+              [card(round(w), H, label, styles=("body",), stroke=LINE),
                text(w / 2, H / 2 + 6, label, TXT, "body", FG, "middle")])
 
 # ------------------------------------------------------------------------------ stack
@@ -271,7 +331,7 @@ def build_stack(path="assets/stack.svg", tile=64, gap=14):
         vb, inner, fill = inline_svg(f"assets/icons/{name}.svg", i, name in ICONS_CREAM)
         x = x0 + i * (tile + gap)
         f = f' fill="{fill}"' if fill else ""
-        out.append(f'<rect x="{x:.1f}" y="0" width="{tile}" height="{tile}" rx="16" fill="{TILE}"/>'
+        out.append(f'<rect x="{x:.1f}" y="0" width="{tile}" height="{tile}" fill="{BG}" stroke="{LINE}"/>'
                    f'<svg x="{x + (tile - size) / 2:.1f}" y="{(tile - size) / 2:.1f}" width="{size}" '
                    f'height="{size}" viewBox="{vb}" preserveAspectRatio="xMidYMid meet"{f} '
                    f'overflow="visible">{inner}</svg>')

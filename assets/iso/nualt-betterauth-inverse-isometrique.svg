@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" fill="none" stroke-linejoin="round" stroke-linecap="round" role="img" aria-label="Logo Better Auth · vue 2 en volume isométrique">
+  <defs>
+    <pattern id="betterauth-inverse-hachures" patternUnits="userSpaceOnUse" width="14" height="14">
+      <rect width="14" height="14" fill="var(--blue)"/>
+      <path d="M-3 3L3 -3 M0 14L14 0 M11 17L17 11" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+    </pattern>
+  </defs>
+  <g id="logo-betterauth-inverse">
+    <g id="logo-betterauth-inverse-outline" stroke="currentColor">
+      <path d="M440.947 299.594 C413.415 315.490 385.882 331.386 358.349 347.282 L358.349 413.982 C385.882 398.086 413.415 382.190 440.947 366.294 Z" fill="url(#betterauth-inverse-hachures)" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M358.349 347.282 C331.251 331.637 304.153 315.992 277.055 300.347 L277.055 367.047 C304.153 382.692 331.251 398.337 358.349 413.982 Z" fill="var(--blue)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M530.636 351.376 C500.740 334.115 470.844 316.855 440.947 299.594 L440.947 366.294 C470.844 383.555 500.740 400.815 530.636 418.076 Z" fill="url(#betterauth-inverse-hachures)" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M701.942 346.326 C644.401 379.548 586.859 412.769 529.318 445.991 L529.318 512.691 C586.859 479.469 644.401 446.248 701.942 413.026 Z" fill="var(--blue)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M529.318 445.991 C502.225 430.349 475.131 414.706 448.038 399.064 L448.038 465.764 C475.131 481.406 502.225 497.049 529.318 512.691 Z" fill="var(--blue)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M448.009 399.047 C416.589 417.187 385.169 435.328 353.749 453.468 L353.749 520.168 C385.169 502.028 416.589 483.887 448.009 465.747 Z" fill="var(--blue)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M435.058 500.412 C406.817 516.717 378.576 533.021 350.336 549.326 L350.336 616.026 C378.576 599.721 406.817 583.417 435.058 567.112 Z" fill="var(--blue)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M350.336 549.326 C266.243 500.775 182.151 452.225 98.058 403.674 L98.058 470.374 C182.151 518.925 266.243 567.475 350.336 616.026 Z" fill="var(--blue)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M98.058 403.674 C126.299 387.369 154.540 371.064 182.781 354.759 C209.879 370.404 236.977 386.049 264.075 401.695 C295.495 383.554 326.915 365.414 358.335 347.274 C388.226 364.531 418.117 381.789 448.009 399.047 C416.589 417.187 385.169 435.328 353.749 453.468 C380.852 469.116 407.955 484.764 435.058 500.412 C406.817 516.717 378.576 533.021 350.336 549.326 C266.243 500.775 182.151 452.225 98.058 403.674 Z M358.349 347.282 C331.251 331.637 304.153 315.992 277.055 300.347 C334.596 267.125 392.138 233.904 449.679 200.682 C533.767 249.230 617.854 297.778 701.942 346.326 C644.401 379.548 586.859 412.769 529.318 445.991 C502.225 430.349 475.131 414.706 448.038 399.064 C475.571 383.168 503.104 367.272 530.636 351.376 C500.740 334.115 470.844 316.855 440.947 299.594 C413.415 315.490 385.882 331.386 358.349 347.282 Z" fill="var(--blue)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+    </g>
+    <g id="logo-betterauth-inverse-fill" stroke="var(--blue)" display="none">
+      <path d="M440.947 299.594 C413.415 315.490 385.882 331.386 358.349 347.282 L358.349 413.982 C385.882 398.086 413.415 382.190 440.947 366.294 Z" fill="url(#betterauth-inverse-hachures)" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M358.349 347.282 C331.251 331.637 304.153 315.992 277.055 300.347 L277.055 367.047 C304.153 382.692 331.251 398.337 358.349 413.982 Z" fill="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M530.636 351.376 C500.740 334.115 470.844 316.855 440.947 299.594 L440.947 366.294 C470.844 383.555 500.740 400.815 530.636 418.076 Z" fill="url(#betterauth-inverse-hachures)" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M701.942 346.326 C644.401 379.548 586.859 412.769 529.318 445.991 L529.318 512.691 C586.859 479.469 644.401 446.248 701.942 413.026 Z" fill="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M529.318 445.991 C502.225 430.349 475.131 414.706 448.038 399.064 L448.038 465.764 C475.131 481.406 502.225 497.049 529.318 512.691 Z" fill="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M448.009 399.047 C416.589 417.187 385.169 435.328 353.749 453.468 L353.749 520.168 C385.169 502.028 416.589 483.887 448.009 465.747 Z" fill="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M435.058 500.412 C406.817 516.717 378.576 533.021 350.336 549.326 L350.336 616.026 C378.576 599.721 406.817 583.417 435.058 567.112 Z" fill="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M350.336 549.326 C266.243 500.775 182.151 452.225 98.058 403.674 L98.058 470.374 C182.151 518.925 266.243 567.475 350.336 616.026 Z" fill="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="M98.058 403.674 C126.299 387.369 154.540 371.064 182.781 354.759 C209.879 370.404 236.977 386.049 264.075 401.695 C295.495 383.554 326.915 365.414 358.335 347.274 C388.226 364.531 418.117 381.789 448.009 399.047 C416.589 417.187 385.169 435.328 353.749 453.468 C380.852 469.116 407.955 484.764 435.058 500.412 C406.817 516.717 378.576 533.021 350.336 549.326 C266.243 500.775 182.151 452.225 98.058 403.674 Z M358.349 347.282 C331.251 331.637 304.153 315.992 277.055 300.347 C334.596 267.125 392.138 233.904 449.679 200.682 C533.767 249.230 617.854 297.778 701.942 346.326 C644.401 379.548 586.859 412.769 529.318 445.991 C502.225 430.349 475.131 414.706 448.038 399.064 C475.571 383.168 503.104 367.272 530.636 351.376 C500.740 334.115 470.844 316.855 440.947 299.594 C413.415 315.490 385.882 331.386 358.349 347.282 Z" fill="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+    </g>
+    <g id="logo-betterauth-inverse-pattern" stroke="currentColor"/>
+  </g>
+</svg>
