@@ -87,7 +87,7 @@ ICONS = ["typescript (1)", "javascript", "python (1)", "html-light", "css-light"
          "nextjs-light (1)", "expo-dark", "medusa-light (1)", "payloadcms-dark (1)", "vercel-light",
          "digital-ocean (1)", "dify"]
 ICONS_CREAM = {"medusa-light (1)", "dify"}   # drawn with no fill of their own: painted FG
-ICONS_WHITE = {"expo-dark", "medusa-light (1)", "payloadcms-dark (1)", "vercel-light"}  # white logos: blue on ivory
+ICONS_WHITE = {"expo-dark", "medusa-light (1)", "payloadcms-dark (1)", "vercel-light"}  # white logos: black on ivory
 
 # --------------------------------------------------------------------------- helpers
 def esc(s):
@@ -331,8 +331,8 @@ def build_stack(path="assets/stack.svg", tile=64, gap=14):
     for i, name in enumerate(ICONS):
         vb, inner, fill = inline_svg(f"assets/icons/{name}.svg", i, name in ICONS_CREAM)
         if name in ICONS_WHITE:
-            inner = re.sub(r"#fff(fff)?\b", BLUE, inner, flags=re.I)
-            fill = BLUE if fill and fill.lower() in ("#fff", "#ffffff") else fill
+            inner = re.sub(r"#fff(fff)?\b", "#000000", inner, flags=re.I)
+            fill = "#000000" if fill and fill.lower() in ("#fff", "#ffffff") else fill
         x = x0 + i * (tile + gap)
         f = f' fill="{fill}"' if fill else ""
         out.append(f'<rect x="{x:.1f}" y="0" width="{tile}" height="{tile}" fill="{BG}" stroke="{LINE}"/>'
