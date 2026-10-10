@@ -34,9 +34,9 @@ HEADLINE = ["Custom e-commerce on MedusaJS v2",
             "Open source under @nualt"]
 # Real width of each line at 44px, measured in Chrome with getComputedTextLength() on the
 # embedded font. A line missing here falls back to the estimate and sits slightly off-centre.
-HEADLINE_PX = {"Custom e-commerce on MedusaJS v2": 804,
-               "Payload CMS / Next.js": 456,
-               "Open source under @nualt": 570}
+HEADLINE_PX = {"Custom e-commerce on MedusaJS v2": 732,
+               "Payload CMS / Next.js": 427,
+               "Open source under @nualt": 510}
 
 ABOUT = {
     "name": "Thomas Sarazin",
