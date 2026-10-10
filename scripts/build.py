@@ -3,7 +3,7 @@
 
     python3 scripts/build.py
 
-Type system (DESIGN_MEMORY of nualt-landing): Yellix 400 for titles (g, l, t, u alternates),
+Type system: Outfit 300 for titles (OFL, free to embed), close to the Yellix of the site,
 Inter 400 for body, Geist Pixel for labels. Never bold. Blue on ivory, square corners, 1px lines.
 Fonts are embedded per card, only the faces the card uses, files untouched.
 Data cards (activity, contributions, repo facts) need `gh` authenticated locally, or GH_TOKEN on CI.
@@ -17,19 +17,17 @@ EMPTY, RAMP = "#E4E4E0", ["#B5C8E4", "#7A9FD3", "#3F76C4", BLUE]
 W, HALF = 1000, 490                          # full README column, and a cell of a two column table
 
 FONTS = json.load(open("scripts/fonts.json"))
-FACES = {"yellix": ("Yellix", 400), "inter400": ("Inter", 400), "pixel": ("Geist Pixel", 400),
+FACES = {"outfit": ("Outfit", 300), "inter400": ("Inter", 400), "pixel": ("Geist Pixel", 400),
          "mono": ("Geist Mono", 400)}
-TITLE = "Yellix,Helvetica,Arial,sans-serif"
+TITLE = "Outfit,Helvetica,Arial,sans-serif"
 BODY = "Inter,Helvetica,Arial,sans-serif"
 PIXEL = "'Geist Pixel',ui-monospace,Menlo,monospace"
 MONO = "'Geist Mono',ui-monospace,Menlo,monospace"
-STYLE = {"title": (TITLE, 400, 0.52, "yellix"),     # family, weight, average advance (em), face key
+STYLE = {"title": (TITLE, 300, 0.52, "outfit"),     # family, weight, average advance (em), face key
          "body": (BODY, 400, 0.50, "inter400"),
          "label": (PIXEL, 400, 0.60, "pixel"),      # subheads, facts, dates
          "code": (MONO, 400, 0.60, "mono")}         # install commands
-# Same alternates as --font-heading-features on the site: g ss03, l ss08, t ss13, u ss15.
-YELLIX_FEATURES = '"ss03" on,"ss08" on,"ss13" on,"ss15" on'
-H1, H2, H3, TXT, LBL = 44, 32, 24, 16, 14            # the whole scale. Titles: Yellix. Text: Inter.
+H1, H2, H3, TXT, LBL = 44, 32, 24, 16, 14            # the whole scale. Titles: Outfit. Text: Inter.
 
 HEADLINE = ["Custom e-commerce on MedusaJS v2",
             "Payload CMS / Next.js",
@@ -116,8 +114,6 @@ def faces(*styles):
     keys = sorted({STYLE[s][3] for s in styles})
     rules = "".join(f"@font-face{{font-family:'{FACES[k][0]}';font-style:normal;font-weight:{FACES[k][1]};"
                     f"src:url(data:font/woff2;base64,{FONTS[k]['b64']}) format('woff2');}}" for k in keys)
-    if "yellix" in keys:
-        rules += f'text[font-family^="Yellix"]{{font-feature-settings:{YELLIX_FEATURES};}}'
     return f"<style>{rules}</style>"
 
 def card(w, h, label, styles=(), radius=0, fill=BG, stroke=None):
